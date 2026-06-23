@@ -20,57 +20,14 @@ supported.patchlevels=
 supported.vendorpatchlevels=
 '; } # end properties
 
-# boot shell variables
-NO_BLOCK_DISPLAY=true
-BLOCK=/dev/block/bootdevice/by-name/boot;
-IS_SLOT_DEVICE=auto;
-RAMDISK_COMPRESSION=auto;
+### AnyKernel install
+## boot shell variables
+block=boot
+is_slot_device=auto
+ramdisk_compression=auto
+patch_vbmeta_flag=auto
+no_magisk_check=1
 
 # import functions/variables and setup patching - see for reference (DO NOT REMOVE)
 . tools/ak3-core.sh;
 . tools/shining.sh
-
-startinstall
-applyconfig
-
-ui_print " "
-ui_print "Installing..."
-
-## boot files attributes
-boot_attributes() {
-  set_perm_recursive 0 0 755 644 $RAMDISK/*;
-  set_perm_recursive 0 0 750 750 $RAMDISK/init* $RAMDISK/sbin;
-} # end attributes
-
-# boot install
-dump_boot;
-
-# Begin Ramdisk Changes
-# migrate from /overlay to /overlay.d to enable SAR Magisk
-if [ -d $RAMDISK/overlay ]; then
-  rm -rf $RAMDISK/overlay;
-fi;
-
-write_boot;
-## end install
-
-## vendor_boot files attributes
-vendor_boot_attributes() {
-  set_perm_recursive 0 0 755 644 $RAMDISK/*;
-  set_perm_recursive 0 0 750 750 $RAMDISK/init* $RAMDISK/sbin;
-} # end attributes
-
-## vendor_boot shell variables
-BLOCK=/dev/block/bootdevice/by-name/vendor_boot;
-IS_SLOT_DEVICE=auto;
-RAMDISK_COMPRESSION=auto;
-PATCH_VBMETA_FLAG=auto;
-
-# reset for vendor_boot patching
-reset_ak;
-
-# vendor_boot install
-dump_boot;
-
-write_boot;
-## end vendor_boot install
